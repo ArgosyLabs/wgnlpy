@@ -30,6 +30,7 @@ class WireGuard(object):
                 self.ifname = messages[0].get_attr('WGDEVICE_A_IFNAME')
                 if spill_private_key:
                     self.private_key = messages[0].get_attr('WGDEVICE_A_PRIVATE_KEY')
+                    assert self.private_key is None or len(self.private_key) == 32
                 self.public_key = messages[0].get_attr('WGDEVICE_A_PUBLIC_KEY')
                 self.listen_port = messages[0].get_attr('WGDEVICE_A_LISTEN_PORT')
                 self.fwmark = messages[0].get_attr('WGDEVICE_A_FWMARK')
@@ -46,6 +47,8 @@ class WireGuard(object):
                             preshared_key = peer.get_attr('WGPEER_A_PRESHARED_KEY')
                             if not spill_preshared_keys:
                                 preshared_key = preshared_key is not None and preshared_key != bytes(32)
+                            else:
+                                assert preshared_key is None or len(preshared_key) == 32
                             self.peers[public_key] = {
                                 'preshared_key': preshared_key,
                                 'last_handshake_time': peer.get_attr('WGPEER_A_LAST_HANDSHAKE_TIME'),
