@@ -35,7 +35,7 @@ class WireGuard(object):
                 self.fwmark = messages[0].get_attr('WGDEVICE_A_FWMARK')
 
                 assert self.ifname == ifname
-                assert len(self.public_key) == 32
+                assert self.public_key is None or len(self.public_key) == 32
 
                 self.peers = { }
 
