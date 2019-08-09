@@ -18,9 +18,9 @@ wg = WireGuard()
 interface = "wg-test"
 
 wg.set_peer(interface, peer,
-	endpoint="[::ffff:203.0.113.0%8]:12345",
-	allowedips=["2001:db8::/32", "198.51.100.1"],
-	)
+    endpoint="[::ffff:203.0.113.0%8]:12345",
+    allowedips=["2001:db8::/32", "198.51.100.1"],
+    )
 peers = wg.get_interface(interface).peers
 assert peer in peers
 
