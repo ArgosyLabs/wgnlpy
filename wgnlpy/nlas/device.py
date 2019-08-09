@@ -11,18 +11,23 @@ class device(genlmsg):
         GET_DEVICE = 0
         SET_DEVICE = 1
 
+    def __interface(self, interface):
+        self['attrs'].append(('WGDEVICE_A_IFNAME', interface))
+
     @staticmethod
-    def get_device():
+    def get_device(interface):
         self = device()
         self['cmd'] = self.type.GET_DEVICE.value
         self['version'] = self.VERSION
+        self.__interface(interface)
         return self
 
     @staticmethod
-    def set_device():
+    def set_device(interface):
         self = device()
         self['cmd'] = self.type.SET_DEVICE.value
         self['version'] = self.VERSION
+        self.__interface(interface)
         return self
 
     from . import key, peer

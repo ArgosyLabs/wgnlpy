@@ -18,9 +18,8 @@ class WireGuard(object):
         flags = netlink.NLM_F_ACK | netlink.NLM_F_REQUEST
         return self.__socket.nlm_request(device, msg_type=self.__socket.prid, msg_flags=flags)
 
-    def get_interface(self, ifname, spill_private_key=False, spill_preshared_keys=False):
-        device = self.__device.get_device()
-        device['attrs'].append(('WGDEVICE_A_IFNAME', ifname))
+    def get_interface(self, interface, spill_private_key=False, spill_preshared_keys=False):
+        device = self.__device.get_device(interface)
         messages = self.__get(device)
 
         class WireGuardInfo(object):
@@ -34,8 +33,6 @@ class WireGuard(object):
                 self.public_key = messages[0].get_attr('WGDEVICE_A_PUBLIC_KEY')
                 self.listen_port = messages[0].get_attr('WGDEVICE_A_LISTEN_PORT')
                 self.fwmark = messages[0].get_attr('WGDEVICE_A_FWMARK')
-
-                assert self.ifname == ifname
 
                 self.peers = { }
 
@@ -72,15 +69,14 @@ class WireGuard(object):
 
         return WireGuardInfo(messages, spill_private_key, spill_preshared_keys)
 
-    def set_interface(self, ifname,
+    def set_interface(self, interface,
             private_key=None,
             listen_port=None,
             fwmark=None,
             replace_peers=False,
             ):
 
-        device = self.__device.set_device()
-        device['attrs'].append(('WGDEVICE_A_IFNAME', ifname))
+        device = self.__device.set_device(interface)
 
         if replace_peers:
             device['attrs'].append(('WGDEVICE_A_FLAGS', device.flag.REPLACE_PEERS.value))
@@ -96,9 +92,8 @@ class WireGuard(object):
 
         return self.__set(device)
 
-    def remove_peers(self, ifname, *public_keys):
-        device = self.__device.set_device()
-        device['attrs'].append(('WGDEVICE_A_IFNAME', ifname))
+    def remove_peers(self, interface, *public_keys):
+        device = self.__device.set_device(interface)
         device['attrs'].append(('WGDEVICE_A_PEERS', []))
 
         for public_key in public_keys:
@@ -109,7 +104,7 @@ class WireGuard(object):
 
         return self.__set(device)
 
-    def set_peer(self, ifname, public_key,
+    def set_peer(self, interface, public_key,
             preshared_key=None,
             endpoint=None,
             persistent_keepalive_interval=None,
@@ -117,8 +112,7 @@ class WireGuard(object):
             replace_allowedips=None,
             ):
 
-        device = self.__device.set_device()
-        device['attrs'].append(('WGDEVICE_A_IFNAME', ifname))
+        device = self.__device.set_device(interface)
 
         peer = device.peer()
         peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', peer.key.frob(public_key)))
@@ -147,9 +141,8 @@ class WireGuard(object):
         device['attrs'].append(('WGDEVICE_A_PEERS', [peer]))
         return self.__set(device)
 
-    def replace_allowedips(self, ifname, *public_keys):
-        device = self.__device.set_device()
-        device['attrs'].append(('WGDEVICE_A_IFNAME', ifname))
+    def replace_allowedips(self, interface, *public_keys):
+        device = self.__device.set_device(interface)
         device['attrs'].append(('WGDEVICE_A_PEERS', []))
 
         for public_key in public_keys:
