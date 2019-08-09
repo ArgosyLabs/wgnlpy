@@ -27,8 +27,10 @@ class WireGuard(object):
             def __init__(self, messages, spill_private_key, spill_preshared_keys):
                 self.ifindex = messages[0].get_attr('WGDEVICE_A_IFINDEX')
                 self.ifname = messages[0].get_attr('WGDEVICE_A_IFNAME')
-                if spill_private_key:
-                    self.private_key = messages[0].get_attr('WGDEVICE_A_PRIVATE_KEY')
+                private_key = messages[0].get_attr('WGDEVICE_A_PRIVATE_KEY')
+                if not spill_private_key:
+                    private_key = private_key is not None
+                self.private_key = private_key
                 self.public_key = messages[0].get_attr('WGDEVICE_A_PUBLIC_KEY')
                 self.listen_port = messages[0].get_attr('WGDEVICE_A_LISTEN_PORT')
                 self.fwmark = messages[0].get_attr('WGDEVICE_A_FWMARK')
@@ -61,6 +63,7 @@ class WireGuard(object):
                 return repr({
                     'ifindex': self.ifindex,
                     'ifname': self.ifname,
+                    'private_key': self.private_key,
                     'public_key': self.public_key,
                     'listen_port': self.listen_port,
                     'fwmark': self.fwmark,
