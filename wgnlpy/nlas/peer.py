@@ -5,12 +5,12 @@ from enum import Enum
 from pyroute2.netlink import nla
 
 class peer(nla):
-    from . import sockaddr, timespec, allowedip
+    from . import key, sockaddr, timespec, allowedip
 
     nla_map = (
         ('WGPEER_A_UNSPEC', 'none'),
-        ('WGPEER_A_PUBLIC_KEY', 'cdata'),
-        ('WGPEER_A_PRESHARED_KEY', 'cdata'),
+        ('WGPEER_A_PUBLIC_KEY', 'key'),
+        ('WGPEER_A_PRESHARED_KEY', 'key'),
         ('WGPEER_A_FLAGS', 'uint32'),
         ('WGPEER_A_ENDPOINT', 'sockaddr'),
         ('WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL', 'uint16'),

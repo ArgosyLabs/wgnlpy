@@ -25,14 +25,14 @@ class device(genlmsg):
         self['version'] = self.VERSION
         return self
 
-    from . import peer
+    from . import key, peer
 
     nla_map = (
         ('WGDEVICE_A_UNSPEC', 'none'),
         ('WGDEVICE_A_IFINDEX', 'uint32'),
         ('WGDEVICE_A_IFNAME', 'asciiz'),
-        ('WGDEVICE_A_PRIVATE_KEY', 'cdata'),
-        ('WGDEVICE_A_PUBLIC_KEY', 'cdata'),
+        ('WGDEVICE_A_PRIVATE_KEY', 'key'),
+        ('WGDEVICE_A_PUBLIC_KEY', 'key'),
         ('WGDEVICE_A_FLAGS', 'uint32'),
         ('WGDEVICE_A_LISTEN_PORT', 'uint16'),
         ('WGDEVICE_A_FWMARK', 'uint32'),

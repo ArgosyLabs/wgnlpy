@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: MIT
 
 from pyroute2 import netlink
-from base64 import b64decode
 
 class WireGuard(object):
     from .nlas import device as __device
@@ -30,25 +29,22 @@ class WireGuard(object):
                 self.ifname = messages[0].get_attr('WGDEVICE_A_IFNAME')
                 if spill_private_key:
                     self.private_key = messages[0].get_attr('WGDEVICE_A_PRIVATE_KEY')
-                    assert self.private_key is None or len(self.private_key) == 32
                 self.public_key = messages[0].get_attr('WGDEVICE_A_PUBLIC_KEY')
                 self.listen_port = messages[0].get_attr('WGDEVICE_A_LISTEN_PORT')
                 self.fwmark = messages[0].get_attr('WGDEVICE_A_FWMARK')
 
                 assert self.ifname == ifname
-                assert self.public_key is None or len(self.public_key) == 32
 
                 self.peers = { }
 
                 for message in messages:
                     for peer in message.get_attr('WGDEVICE_A_PEERS') or []:
                         public_key = peer.get_attr('WGPEER_A_PUBLIC_KEY')
+                        assert public_key is not None
                         if public_key not in self.peers:
                             preshared_key = peer.get_attr('WGPEER_A_PRESHARED_KEY')
                             if not spill_preshared_keys:
-                                preshared_key = preshared_key is not None and preshared_key != bytes(32)
-                            else:
-                                assert preshared_key is None or len(preshared_key) == 32
+                                preshared_key = preshared_key is not None
                             self.peers[public_key] = {
                                 'preshared_key': preshared_key,
                                 'last_handshake_time': peer.get_attr('WGPEER_A_LAST_HANDSHAKE_TIME'),
@@ -87,8 +83,7 @@ class WireGuard(object):
             device['attrs'].append(('WGDEVICE_A_FLAGS', device.flag.REPLACE_PEERS.value))
 
         if private_key is not None:
-            assert len(private_key) == 32
-            device['attrs'].append(('WGDEVICE_A_PRIVATE_KEY', private_key))
+            device['attrs'].append(('WGDEVICE_A_PRIVATE_KEY', device.key.frob(private_key)))
 
         if listen_port is not None:
             device['attrs'].append(('WGDEVICE_A_LISTEN_PORT', listen_port))
@@ -104,12 +99,8 @@ class WireGuard(object):
         device['attrs'].append(('WGDEVICE_A_PEERS', []))
 
         for public_key in public_keys:
-            if not isinstance(public_key, (bytes, bytearray)):
-                public_key = b64decode(public_key)
-
             peer = self.__device.peer()
-            assert len(public_key) == 32
-            peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', public_key))
+            peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', peer.key.frob(public_key)))
             peer['attrs'].append(('WGPEER_A_FLAGS', peer.flag.REMOVE_ME.value))
             device.get_attr('WGDEVICE_A_PEERS').append(peer)
 
@@ -126,12 +117,8 @@ class WireGuard(object):
         device = self.__device.set_device()
         device['attrs'].append(('WGDEVICE_A_IFNAME', ifname))
 
-        if not isinstance(public_key, (bytes, bytearray)):
-            public_key = b64decode(public_key)
-
         peer = device.peer()
-        assert len(public_key) == 32
-        peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', public_key))
+        peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', peer.key.frob(public_key)))
 
         if replace_allowedips is None and allowedips is not None:
             replace_allowedips = True
@@ -140,8 +127,7 @@ class WireGuard(object):
             peer['attrs'].append(('WGPEER_A_FLAGS', peer.flag.REPLACE_ALLOWEDIPS.value))
 
         if preshared_key is not None:
-            assert len(preshared_key) == 32
-            peer['attrs'].append(('WGPEER_A_PRESHARED_KEY', preshared_key))
+            peer['attrs'].append(('WGPEER_A_PRESHARED_KEY', peer.key.frob(preshared_key)))
 
         if endpoint is not None:
             peer['attrs'].append(('WGPEER_A_ENDPOINT', self.__device.peer.sockaddr.frob(endpoint)))
@@ -164,12 +150,8 @@ class WireGuard(object):
         device['attrs'].append(('WGDEVICE_A_PEERS', []))
 
         for public_key in public_keys:
-            if not isinstance(public_key, (bytes, bytearray)):
-                public_key = b64decode(public_key)
-
             peer = self.__device.peer()
-            assert len(public_key) == 32
-            peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', public_key))
+            peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', peer.key.frob(public_key)))
             peer['attrs'].append(('WGPEER_A_FLAGS', peer.flag.REPLACE_ALLOWEDIPS.value))
             device.get_attr('WGDEVICE_A_PEERS').append(peer)
 
