@@ -12,7 +12,12 @@ class device(genlmsg):
         SET_DEVICE = 1
 
     def __interface(self, interface):
-        self['attrs'].append(('WGDEVICE_A_IFNAME', interface))
+        if isinstance(interface, str):
+            self['attrs'].append(('WGDEVICE_A_IFNAME', interface))
+        elif isinstance(interface, int):
+            self['attrs'].append(('WGDEVICE_A_IFINDEX', interface))
+        else:
+            raise TypeError("interface must be int or string")
 
     @staticmethod
     def get_device(interface):
