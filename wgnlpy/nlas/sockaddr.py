@@ -20,7 +20,7 @@ class sockaddr(nla_base):
 
     def decode(self):
         nla_base.decode(self)
-        family, = unpack_from("H", data)
+        family, = unpack_from("H", self["value"])
 
         try:
             type = {
