@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name = "wgnlpy",
-    version = "0.0.5",
+    version = "0.0.6",
     description = ("Netlink connector to WireGuard"),
     url = "https://github.com/ArgosyLabs/wgnlpy",
     author = "Derrick Lyndon Pallas",
