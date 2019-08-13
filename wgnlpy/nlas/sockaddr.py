@@ -37,21 +37,23 @@ class sockaddr(nla_base):
 
     @staticmethod
     def frob(nitz):
+        DEFAULT_PORT = 51820
         if isinstance(nitz, (sockaddr_in, sockaddr_in6)):
             return nitz
+        elif isinstance(nitz, str):
+            url = urlparse("//" + nitz)
+            family, *meh, sockaddr = getaddrinfo(url.hostname, url.port or DEFAULT_PORT)[0]
 
-        DEFAULT_PORT = 51820
-        url = urlparse("//" + nitz)
-        family, *meh, sockaddr = getaddrinfo(url.hostname, url.port or DEFAULT_PORT)[0]
+            try:
+                type, *fields = {
+                    AF_INET: (sockaddr_in, 'addr', 'port'),
+                    AF_INET6: (sockaddr_in6, 'addr', 'port', 'flowinfo', 'scope_id'),
+                }[family]
+            except:
+                raise NotImplementedError
 
-        try:
-            type, *fields = {
-                AF_INET: (sockaddr_in, 'addr', 'port'),
-                AF_INET6: (sockaddr_in6, 'addr', 'port', 'flowinfo', 'scope_id'),
-            }[family]
-        except:
+            return type(**dict(zip(fields, sockaddr)))
+        else:
             raise NotImplementedError
-
-        return type(**dict(zip(fields, sockaddr)))
 
 #
