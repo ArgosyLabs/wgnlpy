@@ -16,6 +16,8 @@ class sockaddr_in(ctypes.Structure):
     def __init__(self, **kwargs):
         super().__init__(_family=self.family)
         for key, value in kwargs.items():
+            if not hasattr(self, key):
+                raise AttributeError
             setattr(self, key, value)
 
     def __repr__(self):
