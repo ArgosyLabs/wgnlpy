@@ -11,7 +11,7 @@ class WireGuard(object):
         self.__socket.bind('wireguard', self.__device)
 
     def __get(self, device):
-        flags = netlink.NLM_F_ACK | netlink.NLM_F_REQUEST | netlink.NLM_F_DUMP
+        flags = netlink.NLM_F_REQUEST | netlink.NLM_F_DUMP
         return self.__socket.nlm_request(device, msg_type=self.__socket.prid, msg_flags=flags)
 
     def __set(self, device):
