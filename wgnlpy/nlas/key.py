@@ -6,7 +6,7 @@ from pyroute2.netlink import nla_base
 
 class key(nla_base):
     fields = (
-        ('value', 's'),
+        ('value', '32s'),
     )
 
     def encode(self):
