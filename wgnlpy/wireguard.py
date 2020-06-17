@@ -126,6 +126,7 @@ class WireGuard(object):
             persistent_keepalive_interval=None,
             allowedips=None,
             replace_allowedips=None,
+            update_only=False,
             ):
 
         device = self.__device.set_device(interface)
@@ -138,8 +139,13 @@ class WireGuard(object):
         if replace_allowedips is None and allowedips is not None:
             replace_allowedips = True
 
+        flags = 0
         if replace_allowedips:
-            peer['attrs'].append(('WGPEER_A_FLAGS', peer.flag.REPLACE_ALLOWEDIPS.value))
+            flags |= peer.flag.REPLACE_ALLOWEDIPS.value
+        if update_only:
+            flags |= peer.flag.UPDATE_ONLY.value
+        if flags:
+            peer['attrs'].append(('WGPEER_A_FLAGS', flags))
 
         if preshared_key is not None:
             if not isinstance(preshared_key, (bytes, bytearray)):

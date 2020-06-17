@@ -25,5 +25,6 @@ class peer(nla):
     class flag(Enum):
         REMOVE_ME = 1 << 0
         REPLACE_ALLOWEDIPS = 1 << 1
+        UPDATE_ONLY = 1 << 2
 
 #
