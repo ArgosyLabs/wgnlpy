@@ -15,7 +15,7 @@ setup(
     author_email = "derrick@argosylabs.com",
     license = "MIT",
     packages = [ "wgnlpy", "wgnlpy/nlas" ],
-    install_requires = [ "pyroute2" ],
+    install_requires = [ "cryptography", "pyroute2" ],
     long_description = long_description,
     long_description_content_type = "text/markdown",
     keywords = "wireguard netlink sockaddr sockaddr_in sockaddr_in6",
