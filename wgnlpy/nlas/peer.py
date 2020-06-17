@@ -2,11 +2,12 @@
 # SPDX-License-Identifier: MIT
 
 from enum import Enum
-from pyroute2.netlink import nla
+from pyroute2.netlink import nla, NLA_F_NESTED
 
 class peer(nla):
     from . import key, sockaddr, timespec, allowedip
 
+    nla_flags = NLA_F_NESTED
     nla_map = (
         ('WGPEER_A_UNSPEC', 'none'),
         ('WGPEER_A_PUBLIC_KEY', 'key'),

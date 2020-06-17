@@ -3,9 +3,10 @@
 
 from socket import AF_INET, AF_INET6
 from ipaddress import IPv4Network, IPv6Network, ip_network
-from pyroute2.netlink import nla
+from pyroute2.netlink import nla, NLA_F_NESTED
 
 class allowedip(nla):
+    nla_flags = NLA_F_NESTED
     nla_map = (
         ('WGALLOWEDIP_A_UNSPEC', 'none'),
         ('WGALLOWEDIP_A_FAMILY', 'uint16'),
