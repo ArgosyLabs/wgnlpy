@@ -101,7 +101,7 @@ class WireGuard(object):
             peer = self.__device.peer()
             peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', peer.key.frob(public_key)))
             peer['attrs'].append(('WGPEER_A_FLAGS', peer.flag.REMOVE_ME.value))
-            device.get_attr('WGDEVICE_A_PEERS').append(peer)
+            device.get_attr('WGDEVICE_A_PEERS').append({'attrs': peer['attrs']})
 
         return self.__set(device)
 
@@ -137,9 +137,9 @@ class WireGuard(object):
             peer['attrs'].append(('WGPEER_A_ALLOWEDIPS', []))
 
             for allowedip in allowedips:
-                peer.get_attr('WGPEER_A_ALLOWEDIPS').append(self.__device.peer.allowedip.frob(allowedip))
+                peer.get_attr('WGPEER_A_ALLOWEDIPS').append({'attrs': self.__device.peer.allowedip.frob(allowedip)['attrs']})
 
-        device['attrs'].append(('WGDEVICE_A_PEERS', [peer]))
+        device['attrs'].append(('WGDEVICE_A_PEERS', [{'attrs': peer['attrs']}]))
         return self.__set(device)
 
     def replace_allowedips(self, interface, *public_keys):
@@ -150,7 +150,7 @@ class WireGuard(object):
             peer = self.__device.peer()
             peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', peer.key.frob(public_key)))
             peer['attrs'].append(('WGPEER_A_FLAGS', peer.flag.REPLACE_ALLOWEDIPS.value))
-            device.get_attr('WGDEVICE_A_PEERS').append(peer)
+            device.get_attr('WGDEVICE_A_PEERS').append({'attrs': peer['attrs']})
 
         return self.__set(device)
 
