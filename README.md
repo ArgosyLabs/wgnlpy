@@ -23,7 +23,9 @@ wg.remove_peers(interface, peer)
 assert peer not in wg.get_interface(interface).peers
 ```
 
-Requires [pyroute2](https://pyroute2.org/).
+Requires
+* [cryptography](https://cryptography.io/), &
+* [pyroute2](https://pyroute2.org/).
 
 Also useful: the `sockaddr_in` and `sockaddr_in6` utility classes for
 sockaddr manipulation.
