@@ -11,7 +11,7 @@ print("PEER", repr(peer))
 wg = WireGuard()
 interface = "wg-test"
 
-wg.set_peer(interface, bytes(peer),
+wg.set_peer(interface, peer,
     endpoint="[::ffff:203.0.113.0%8]:12345",
     allowedips=["2001:db8::/32", "198.51.100.1"],
     )
@@ -20,5 +20,5 @@ assert peer in peers
 
 pprint(peers[peer])
 
-wg.remove_peers(interface, bytes(peer))
+wg.remove_peers(interface, peer)
 assert peer not in wg.get_interface(interface).peers

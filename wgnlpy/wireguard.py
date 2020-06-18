@@ -3,6 +3,10 @@
 
 from pyroute2 import netlink
 
+from .preshared_key import PresharedKey
+from .private_key import PrivateKey
+from .public_key import PublicKey
+
 class WireGuard(object):
     from .nlas import device as __device
 
@@ -26,11 +30,14 @@ class WireGuard(object):
             def __init__(self, messages, spill_private_key, spill_preshared_keys):
                 self.ifindex = messages[0].get_attr('WGDEVICE_A_IFINDEX')
                 self.ifname = messages[0].get_attr('WGDEVICE_A_IFNAME')
-                private_key = messages[0].get_attr('WGDEVICE_A_PRIVATE_KEY')
+                self.private_key = messages[0].get_attr('WGDEVICE_A_PRIVATE_KEY')
                 if not spill_private_key:
-                    private_key = private_key is not None
-                self.private_key = private_key
+                    self.private_key = self.private_key is not None
+                elif self.private_key is not None:
+                    self.private_key = PrivateKey(self.private_key)
                 self.public_key = messages[0].get_attr('WGDEVICE_A_PUBLIC_KEY')
+                if self.public_key is not None:
+                    self.public_key = PublicKey(self.public_key)
                 self.listen_port = messages[0].get_attr('WGDEVICE_A_LISTEN_PORT')
                 self.fwmark = messages[0].get_attr('WGDEVICE_A_FWMARK')
 
@@ -40,10 +47,14 @@ class WireGuard(object):
                     for peer in message.get_attr('WGDEVICE_A_PEERS') or []:
                         public_key = peer.get_attr('WGPEER_A_PUBLIC_KEY')
                         assert public_key is not None
+                        if public_key is not None:
+                            public_key = PublicKey(public_key)
                         if public_key not in self.peers:
                             preshared_key = peer.get_attr('WGPEER_A_PRESHARED_KEY')
                             if not spill_preshared_keys:
                                 preshared_key = preshared_key is not None
+                            elif preshared_key is not None:
+                                preshared_key = PresharedKey(preshared_key)
                             self.peers[public_key] = {
                                 'preshared_key': preshared_key,
                                 'endpoint': peer.get_attr('WGPEER_A_ENDPOINT'),
@@ -83,7 +94,9 @@ class WireGuard(object):
             device['attrs'].append(('WGDEVICE_A_FLAGS', device.flag.REPLACE_PEERS.value))
 
         if private_key is not None:
-            device['attrs'].append(('WGDEVICE_A_PRIVATE_KEY', device.key.frob(private_key)))
+            if not isinstance(private_key, (bytes, bytearray)):
+                private_key = bytes(PrivateKey(private_key))
+            device['attrs'].append(('WGDEVICE_A_PRIVATE_KEY', private_key))
 
         if listen_port is not None:
             device['attrs'].append(('WGDEVICE_A_LISTEN_PORT', listen_port))
@@ -99,7 +112,9 @@ class WireGuard(object):
 
         for public_key in public_keys:
             peer = self.__device.peer()
-            peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', peer.key.frob(public_key)))
+            if not isinstance(public_key, (bytes, bytearray)):
+                public_key = bytes(PublicKey(public_key))
+            peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', public_key))
             peer['attrs'].append(('WGPEER_A_FLAGS', peer.flag.REMOVE_ME.value))
             device.get_attr('WGDEVICE_A_PEERS').append({'attrs': peer['attrs']})
 
@@ -116,7 +131,9 @@ class WireGuard(object):
         device = self.__device.set_device(interface)
 
         peer = device.peer()
-        peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', peer.key.frob(public_key)))
+        if not isinstance(public_key, (bytes, bytearray)):
+            public_key = bytes(PublicKey(public_key))
+        peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', public_key))
 
         if replace_allowedips is None and allowedips is not None:
             replace_allowedips = True
@@ -125,7 +142,9 @@ class WireGuard(object):
             peer['attrs'].append(('WGPEER_A_FLAGS', peer.flag.REPLACE_ALLOWEDIPS.value))
 
         if preshared_key is not None:
-            peer['attrs'].append(('WGPEER_A_PRESHARED_KEY', peer.key.frob(preshared_key)))
+            if not isinstance(preshared_key, (bytes, bytearray)):
+                preshared_key = bytes(PresharedKey(preshared_key))
+            peer['attrs'].append(('WGPEER_A_PRESHARED_KEY', preshared_key))
 
         if endpoint is not None:
             peer['attrs'].append(('WGPEER_A_ENDPOINT', self.__device.peer.sockaddr.frob(endpoint)))
@@ -148,7 +167,9 @@ class WireGuard(object):
 
         for public_key in public_keys:
             peer = self.__device.peer()
-            peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', peer.key.frob(public_key)))
+            if not isinstance(public_key, (bytes, bytearray)):
+                public_key = bytes(PublicKey(public_key))
+            peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', public_key))
             peer['attrs'].append(('WGPEER_A_FLAGS', peer.flag.REPLACE_ALLOWEDIPS.value))
             device.get_attr('WGDEVICE_A_PEERS').append({'attrs': peer['attrs']})
 
