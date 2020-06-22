@@ -21,6 +21,12 @@ class sockaddr_in6(ctypes.Structure):
                 raise AttributeError
             setattr(self, key, value)
 
+    def __str__(self):
+        if self.scope_id > 0:
+            return f'[{self.addr}%{self.scope_id}]:{self.port}'
+        else:
+            return f'[{self.addr}]:{self.port}'
+
     def __repr__(self):
         return repr({
             'family': self.family,

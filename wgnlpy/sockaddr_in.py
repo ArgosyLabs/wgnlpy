@@ -20,6 +20,9 @@ class sockaddr_in(ctypes.Structure):
                 raise AttributeError
             setattr(self, key, value)
 
+    def __str__(self):
+        return f'{self.addr}:{self.port}'
+
     def __repr__(self):
         return repr({
             'family': self.family,
