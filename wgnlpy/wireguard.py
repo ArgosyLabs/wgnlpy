@@ -8,6 +8,8 @@ from .private_key import PrivateKey
 from .public_key import PublicKey
 
 class WireGuard(object):
+    __slots__ = ( "__socket" )
+
     from .nlas import device as __device
 
     def __init__(self, **kwargs):
@@ -27,6 +29,16 @@ class WireGuard(object):
         messages = self.__get(device)
 
         class WireGuardInfo(object):
+            __slots__ = (
+                "ifindex",
+                "ifname",
+                "private_key",
+                "public_key",
+                "listen_port",
+                "fwmark",
+                "peers",
+            )
+
             def __init__(self, messages, spill_private_key, spill_preshared_keys):
                 self.ifindex = messages[0].get_attr('WGDEVICE_A_IFINDEX')
                 self.ifname = messages[0].get_attr('WGDEVICE_A_IFNAME')
