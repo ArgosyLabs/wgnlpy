@@ -55,11 +55,14 @@ class WireGuard(object):
                                 preshared_key = preshared_key is not None
                             elif preshared_key is not None:
                                 preshared_key = PresharedKey(preshared_key)
+                            last_handshake_time = peer.get_attr('WGPEER_A_LAST_HANDSHAKE_TIME')
+                            if not last_handshake_time > 0:
+                                last_handshake_time = None
                             self.peers[public_key] = {
                                 'preshared_key': preshared_key,
                                 'endpoint': peer.get_attr('WGPEER_A_ENDPOINT'),
                                 'persistent_keepalive_interval': peer.get_attr('WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL'),
-                                'last_handshake_time': peer.get_attr('WGPEER_A_LAST_HANDSHAKE_TIME'),
+                                'last_handshake_time': last_handshake_time,
                                 'rx_bytes': peer.get_attr('WGPEER_A_RX_BYTES'),
                                 'tx_bytes': peer.get_attr('WGPEER_A_TX_BYTES'),
                                 'allowedips': [],
