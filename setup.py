@@ -8,7 +8,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name = "wgnlpy",
-    version = "0.0.8",
+    version = "0.1.0",
     description = ("Netlink connector to WireGuard"),
     url = "https://github.com/ArgosyLabs/wgnlpy",
     author = "Derrick Lyndon Pallas",
@@ -20,7 +20,7 @@ setup(
     long_description_content_type = "text/markdown",
     keywords = "wireguard netlink sockaddr sockaddr_in sockaddr_in6",
     classifiers = [
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: System :: Networking",
