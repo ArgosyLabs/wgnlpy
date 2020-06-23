@@ -109,7 +109,9 @@ class WireGuard(object):
             device['attrs'].append(('WGDEVICE_A_FLAGS', device.flag.REPLACE_PEERS.value))
 
         if private_key is not None:
-            if not isinstance(private_key, (bytes, bytearray)):
+            if isinstance(private_key, PrivateKey):
+                private_key = bytes(private_key)
+            elif not isinstance(private_key, (bytes, bytearray)):
                 private_key = bytes(PrivateKey(private_key))
             device['attrs'].append(('WGDEVICE_A_PRIVATE_KEY', private_key))
 
@@ -127,7 +129,9 @@ class WireGuard(object):
 
         for public_key in public_keys:
             peer = self.__device.peer()
-            if not isinstance(public_key, (bytes, bytearray)):
+            if isinstance(public_key, PublicKey):
+                public_key = bytes(public_key)
+            elif not isinstance(public_key, (bytes, bytearray)):
                 public_key = bytes(PublicKey(public_key))
             peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', public_key))
             peer['attrs'].append(('WGPEER_A_FLAGS', peer.flag.REMOVE_ME.value))
@@ -147,7 +151,9 @@ class WireGuard(object):
         device = self.__device.set_device(interface)
 
         peer = device.peer()
-        if not isinstance(public_key, (bytes, bytearray)):
+        if isinstance(public_key, PublicKey):
+            public_key = bytes(public_key)
+        elif not isinstance(public_key, (bytes, bytearray)):
             public_key = bytes(PublicKey(public_key))
         peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', public_key))
 
@@ -163,7 +169,9 @@ class WireGuard(object):
             peer['attrs'].append(('WGPEER_A_FLAGS', flags))
 
         if preshared_key is not None:
-            if not isinstance(preshared_key, (bytes, bytearray)):
+            if isinstance(preshared_key, PresharedKey):
+                preshared_key = bytes(preshared_key)
+            elif not isinstance(preshared_key, (bytes, bytearray)):
                 preshared_key = bytes(PresharedKey(preshared_key))
             peer['attrs'].append(('WGPEER_A_PRESHARED_KEY', preshared_key))
 
@@ -188,7 +196,9 @@ class WireGuard(object):
 
         for public_key in public_keys:
             peer = self.__device.peer()
-            if not isinstance(public_key, (bytes, bytearray)):
+            if isinstance(public_key, PublicKey):
+                public_key = bytes(public_key)
+            elif not isinstance(public_key, (bytes, bytearray)):
                 public_key = bytes(PublicKey(public_key))
             peer['attrs'].append(('WGPEER_A_PUBLIC_KEY', public_key))
             peer['attrs'].append(('WGPEER_A_FLAGS', peer.flag.REPLACE_ALLOWEDIPS.value))
