@@ -6,11 +6,13 @@ from .key import Key
 from secrets import token_bytes
 
 class PresharedKey(Key):
-    def __init__(self, key=bytes(32)):
-        if not isinstance(key, (PresharedKey, bytes, bytearray, str)):
+    def __init__(self, key=None):
+        if isinstance(key, type(None)):
+            super().__init__()
+        elif isinstance(key, (type(None), PresharedKey, bytes, bytearray, str)):
+            super().__init__(key)
+        else:
             raise TypeError("key must be PresharedKey, bytes, bytearray, or str")
-
-        super().__init__(key)
 
     def __eq__(self, other):
         if isinstance(other, Key) and not isinstance(other, PresharedKey):

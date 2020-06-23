@@ -8,8 +8,10 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PublicKey
 
 class PublicKey(Key):
-    def __init__(self, key=bytes(32)):
-        if isinstance(key, PublicKey):
+    def __init__(self, key=None):
+        if key is None:
+            super().__init__()
+        elif isinstance(key, PublicKey):
             super().__init__(key)
         elif isinstance(key, X25519PublicKey):
             super().__init__(key.public_bytes(

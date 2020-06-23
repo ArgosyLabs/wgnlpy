@@ -6,7 +6,7 @@ from base64 import b64encode, b64decode
 class Key:
     __slots__ = ('_value')
 
-    def __init__(self, key):
+    def __init__(self, key=bytes(32)):
         if isinstance(key, Key):
             self._value = key._value
         elif isinstance(key, bytes):
