@@ -49,3 +49,5 @@ class WireGuardPeer(object):
             'allowedips': self.allowedips,
             'protocol_version': self.protocol_version,
         })
+
+#

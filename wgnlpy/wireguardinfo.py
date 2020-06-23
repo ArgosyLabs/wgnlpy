@@ -48,3 +48,5 @@ class WireGuardInfo(object):
             'fwmark': self.fwmark,
             'peers': self.peers,
         })
+
+#
