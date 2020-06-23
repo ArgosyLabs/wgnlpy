@@ -4,6 +4,8 @@
 from .key import Key
 
 from base64 import b64decode
+from hashlib import shake_128
+from ipaddress import ip_network, IPv4Network, IPv6Network
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PublicKey
 
@@ -39,5 +41,22 @@ class PublicKey(Key):
 
     def __hash__(self):
         return super().__hash__()
+
+    def orchid(self, secret=b'', network=IPv6Network("2001:20::/28")):
+        if isinstance(secret, str):
+            secret = secret.encode('utf-8')
+        elif not isinstance(secret, (bytes, bytearray)):
+            secret = bytes(secret)
+
+        if not isinstance(network, (IPv4Network, IPv6Network, )):
+            network = ip_network(network)
+
+        hash = shake_128(secret + self._value).digest(network.max_prefixlen//8)
+        mask = int.from_bytes(network.hostmask.packed, byteorder='big')
+        host = int.from_bytes(hash, byteorder='big')
+        addr = network[host & mask]
+        assert addr != network.network_address, "Generated network address"
+        assert addr != network.broadcast_address, "Generated broadcast address"
+        return addr
 
 #
