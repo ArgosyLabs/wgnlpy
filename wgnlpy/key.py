@@ -30,6 +30,9 @@ class Key:
     def __repr__(self):
         return f'{type(self).__name__}({repr(str(self))})'
 
+    def __bool__(self):
+        return self._value != bytes(32)
+
     def __eq__(self, other):
         if isinstance(other, Key):
             return self._value == other._value
