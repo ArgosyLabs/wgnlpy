@@ -51,7 +51,7 @@ class PublicKey(Key):
         if not isinstance(network, (IPv4Network, IPv6Network, )):
             network = ip_network(network)
 
-        hash = shake_128(secret + self._value).digest(network.max_prefixlen//8)
+        hash = shake_128(secret + bytes(self)).digest(network.max_prefixlen//8)
         mask = int.from_bytes(network.hostmask.packed, byteorder='big')
         host = int.from_bytes(hash, byteorder='big')
         addr = network[host & mask]
