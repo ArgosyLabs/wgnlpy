@@ -25,7 +25,7 @@ class allowedip(nla):
             return {
                 AF_INET: IPv4Network,
                 AF_INET6: IPv6Network,
-            }[family](ipaddr, cidr_mask)
+            }[family]((ipaddr, cidr_mask,))
         except:
             raise NotImplementedError
 
