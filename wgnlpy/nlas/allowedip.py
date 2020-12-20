@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 from socket import AF_INET, AF_INET6
-from ipaddress import IPv4Network, IPv6Network, ip_network
+from ipaddress import IPv4Address, IPv6Address, IPv4Network, IPv6Network, ip_network
 from pyroute2.netlink import nla, NLA_F_NESTED
 
 class allowedip(nla):
@@ -22,10 +22,14 @@ class allowedip(nla):
         )
 
         try:
+            addr = {
+                AF_INET: IPv4Address,
+                AF_INET6: IPv6Address,
+            }[family](ipaddr)
             return {
                 AF_INET: IPv4Network,
                 AF_INET6: IPv6Network,
-            }[family](ipaddr, cidr_mask)
+            }[family]("{}/{}".format(addr, cidr_mask))
         except:
             raise NotImplementedError
 
