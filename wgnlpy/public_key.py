@@ -55,8 +55,15 @@ class PublicKey(Key):
         mask = int.from_bytes(network.hostmask.packed, byteorder='big')
         host = int.from_bytes(hash, byteorder='big')
         addr = network[host & mask]
+
+        if addr == network.network_address:
+            addr += 1
+        elif addr == network.broadcast_address:
+            addr -= 1
+
         assert addr != network.network_address, "Generated network address"
         assert addr != network.broadcast_address, "Generated broadcast address"
+        assert addr in network, "Generated out-of-network address"
         return addr
 
     def lla(self, secret=b'', network=IPv6Network("fe80::/10")):
@@ -75,8 +82,15 @@ class PublicKey(Key):
         mask = int.from_bytes(network.hostmask.packed, byteorder='big')
         host = int.from_bytes(hash, byteorder='big')
         addr = network[host & mask]
+
+        if addr == network.network_address:
+            addr += 1
+        elif addr == network.broadcast_address:
+            addr -= 1
+
         assert addr != network.network_address, "Generated network address"
         assert addr != network.broadcast_address, "Generated broadcast address"
+        assert addr in network, "Generated out-of-network address"
         return addr
 
 #
