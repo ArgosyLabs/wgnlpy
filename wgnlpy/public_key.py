@@ -42,7 +42,10 @@ class PublicKey(Key):
     def __hash__(self):
         return super().__hash__()
 
-    def orchid(self, secret=b'', network=IPv6Network("2001:20::/28")):
+    def orchid(self, secret=b'', network=None):
+        if network is None:
+            return self.orchid6(secret)
+
         if isinstance(secret, str):
             secret = secret.encode('utf-8')
         elif not isinstance(secret, (bytes, bytearray)):
@@ -66,7 +69,17 @@ class PublicKey(Key):
         assert addr in network, "Generated out-of-network address"
         return addr
 
-    def lla(self, secret=b'', network=IPv6Network("fe80::/10")):
+    def orchid4(self, secret=b''):
+        return self.orchid(secret, IPv4Network("100.64.0.0/10"))
+
+    def orchid6(self, secret=b''):
+        return self.orchid(secret, IPv6Network("2001:20::/28"))
+
+
+    def lla(self, secret=b'', network=None):
+        if network is None:
+            return self.lla6(secret)
+
         if isinstance(secret, str):
             secret = secret.encode('utf-8')
         elif not isinstance(secret, (bytes, bytearray)):
@@ -92,5 +105,11 @@ class PublicKey(Key):
         assert addr != network.broadcast_address, "Generated broadcast address"
         assert addr in network, "Generated out-of-network address"
         return addr
+
+    def lla4(self, secret=b''):
+        return self.lla(secret, IPv4Network("169.254.0.0/16"))
+
+    def lla6(self, secret=b''):
+        return self.lla(secret, IPv6Network("fe80::/10"))
 
 #

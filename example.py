@@ -7,6 +7,7 @@ from pprint import pprint
 
 peer = PrivateKey.generate().public_key()
 print("PEER", repr(peer))
+print(peer.lla4())
 
 wg = WireGuard()
 interface = "wg-test"
