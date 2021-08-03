@@ -21,6 +21,7 @@ class sockaddr(nla_base):
 
     def decode(self):
         nla_base.decode(self)
+        self["value"] = self.data[self.offset+4:self.offset+self.length]
         family, = unpack_from("H", self["value"])
 
         try:
