@@ -35,7 +35,7 @@ class WireGuardInfo(object):
         for message in messages:
             wgp = lambda p: WireGuardPeer(p, spill_preshared_keys)
             for peer in map(wgp, message.get_attr('WGDEVICE_A_PEERS') or []):
-                assert peer.public_key not in self.peers
+                if peer.public_key in self.peers: continue
                 self.peers[peer.public_key] = peer
 
     def __repr__(self):
