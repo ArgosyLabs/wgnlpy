@@ -27,7 +27,10 @@ class WireGuardPeer(object):
         self.endpoint = peer.get_attr('WGPEER_A_ENDPOINT')
         self.persistent_keepalive_interval = peer.get_attr('WGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL')
         self.last_handshake_time = peer.get_attr('WGPEER_A_LAST_HANDSHAKE_TIME')
-        if not self.last_handshake_time > 0:
+        try:
+            if not self.last_handshake_time > 0:
+                self.last_handshake_time = None
+        except TypeError:
             self.last_handshake_time = None
         self.rx_bytes = peer.get_attr('WGPEER_A_RX_BYTES')
         self.tx_bytes = peer.get_attr('WGPEER_A_TX_BYTES')
